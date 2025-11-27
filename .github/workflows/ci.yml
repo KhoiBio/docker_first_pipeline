@@ -108,18 +108,3 @@ jobs:
           if [ ! "$(ls -A output_atac)" ]; then
             echo "ATAC pipeline produced no output" && exit 1
           fi
-
-      # ============================
-      # Upload artifacts for debugging
-      # ============================
-      - name: Upload RNA outputs
-        uses: actions/upload-artifact@v3
-        with:
-          name: RNA-output
-          path: output_rna
-
-      - name: Upload ATAC outputs
-        uses: actions/upload-artifact@v3
-        with:
-          name: ATAC-output
-          path: output_atac
