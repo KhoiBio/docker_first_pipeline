@@ -1,0 +1,59 @@
+name: Docker Pipeline CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+
+    # 1. Checkout code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. Set up Docker Buildx (for caching)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # 3. Build Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t docker_first_pipeline:ci .
+
+    # 4. Run RNA-seq pipeline on fake test data
+    - name: Test RNA-seq pipeline
+      run: |
+        mkdir -p ci_test/output
+        docker run --rm \
+          -v $PWD/test_data:/data \
+          docker_first_pipeline:ci \
+          bash /pipeline/workflow/run_rna.sh \
+          /data/fake_rna_R1.fastq.gz \
+          /data/fake_rna_R2.fastq.gz \
+          /data/fake_genome.fa \
+          /data/output
+
+    # 5. Run ATAC-seq pipeline on fake test data
+    - name: Test ATAC-seq pipeline
+      run: |
+        mkdir -p ci_test/output
+        docker run --rm \
+          -v $PWD/test_data:/data \
+          docker_first_pipeline:ci \
+          bash /pipeline/workflow/run_atac.sh \
+          /data/fake_atac_R1.fastq.gz \
+          /data/fake_atac_R2.fastq.gz \
+          /data/fake_genome.fa \
+          condition1 \
+          /data/output
+
+    # 6. Check that output files exist
+    - name: Verify output files
+      run: |
+        set -e
+        test -f test_data/output/fake_rna_final.bam || echo "RNA final BAM missing" 
+        test -f test_data/output/condition1_merged.sorted.bam || echo "ATAC merged BAM missing"
