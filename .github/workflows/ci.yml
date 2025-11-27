@@ -1,3 +1,4 @@
+
 name: Docker Pipeline CI
 
 on:
@@ -34,8 +35,9 @@ jobs:
       # Step 4: Run RNA pipeline test
       - name: Run RNA pipeline test
         run: |
-          mkdir -p test_output_rna
+          mkdir -p output_rna
           docker run --rm \
+            --user $(id -u):$(id -g) \
             -v $PWD/test_data:/data/test_data \
             -v $PWD/output_rna:/data/test_output_rna \
             -v $PWD/reference:/data/reference \
@@ -46,17 +48,25 @@ jobs:
             /data/reference/test_reference.fa \
             /data/test_output_rna
 
-      # Step 5: Check RNA output files (HOST directory, not /data/)
+      # Step 5: Check RNA output files
       - name: Check RNA output files
         run: |
           echo "RNA output directory:"
-          ls -R test_output_rna || echo "No RNA output found"
+          ls -lh output_rna || echo "No RNA output found"
 
-      # Step 6: Run ATAC pipeline test
+      # Step 6: Upload RNA output as artifact
+      - name: Upload RNA output
+        uses: actions/upload-artifact@v3
+        with:
+          name: rna-output
+          path: output_rna
+
+      # Step 7: Run ATAC pipeline test
       - name: Run ATAC pipeline test
         run: |
-          mkdir -p test_output_atac
+          mkdir -p output_atac
           docker run --rm \
+            --user $(id -u):$(id -g) \
             -v $PWD/test_data:/data/test_data \
             -v $PWD/output_atac:/data/test_output_atac \
             -v $PWD/reference:/data/reference \
@@ -68,8 +78,15 @@ jobs:
             condition1 \
             /data/test_output_atac
 
-      # Step 7: Check ATAC output files (HOST directory)
+      # Step 8: Check ATAC output files
       - name: Check ATAC output files
         run: |
           echo "ATAC output directory:"
-          ls -R test_output_atac || echo "No ATAC output found"
+          ls -lh output_atac || echo "No ATAC output found"
+
+      # Step 9: Upload ATAC output as artifact
+      - name: Upload ATAC output
+        uses: actions/upload-artifact@v3
+        with:
+          name: atac-output
+          path: output_atac
