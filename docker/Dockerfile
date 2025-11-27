@@ -1,3 +1,4 @@
+
 FROM ubuntu:22.04
 
 # Set environment variables
@@ -11,11 +12,11 @@ RUN apt-get update && apt-get install -y \
     libncurses5-dev libncursesw5-dev libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install bioinformatics tools
+# Upgrade pip and install Python packages
 RUN pip3 install --upgrade pip && \
-    pip3 install pandas numpy matplotlib seaborn
+    pip3 install pandas numpy matplotlib seaborn MACS2
 
-# Tools for RNA/ATAC-seq
+# Install bioinformatics tools via apt
 RUN apt-get update && apt-get install -y \
     fastqc \
     samtools \
@@ -29,12 +30,26 @@ RUN apt-get update && apt-get install -y \
 # Install STAR aligner (RNA-seq)
 RUN wget https://github.com/alexdobin/STAR/archive/2.7.10b.tar.gz && \
     tar -xvzf 2.7.10b.tar.gz && \
-    cd STAR-2.7.10b/source && make STAR && cp STAR /usr/local/bin
+    cd STAR-2.7.10b/source && make STAR && cp STAR /usr/local/bin && \
+    cd / && rm -rf STAR-2.7.10b 2.7.10b.tar.gz
 
-# Install MACS2 (ATAC-seq)
-RUN pip3 install MACS2
+# Install BWA (ATAC-seq)
+RUN apt-get update && apt-get install -y bwa && rm -rf /var/lib/apt/lists/*
+
+# Install Picard (Java-based)
+RUN wget https://github.com/broadinstitute/picard/releases/download/3.1.1/picard.jar -O /usr/local/bin/picard.jar
+
+# Install BAMTools
+RUN apt-get update && apt-get install -y bamtools && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /pipeline
+WORKDIR /pipeline/workflow
 
+# Copy pipeline scripts into container
+COPY run_rna.sh run_atac.sh run_atac_macs.sh ./
+
+# Make scripts executable
+RUN chmod +x run_rna.sh run_atac.sh run_atac_macs.sh
+
+# Set entrypoint
 ENTRYPOINT ["/bin/bash"]
