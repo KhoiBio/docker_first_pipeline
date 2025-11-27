@@ -54,14 +54,7 @@ jobs:
           echo "RNA output directory:"
           ls -lh output_rna || echo "No RNA output found"
 
-      # Step 6: Upload RNA output as artifact
-      - name: Upload RNA output
-        uses: actions/upload-artifact@v3
-        with:
-          name: rna-output
-          path: output_rna
-
-      # Step 7: Run ATAC pipeline test
+      # Step 6: Run ATAC pipeline test
       - name: Run ATAC pipeline test
         run: |
           mkdir -p output_atac
@@ -78,15 +71,8 @@ jobs:
             condition1 \
             /data/test_output_atac
 
-      # Step 8: Check ATAC output files
+      # Step 7: Check ATAC output files
       - name: Check ATAC output files
         run: |
           echo "ATAC output directory:"
           ls -lh output_atac || echo "No ATAC output found"
-
-      # Step 9: Upload ATAC output as artifact
-      - name: Upload ATAC output
-        uses: actions/upload-artifact@v3
-        with:
-          name: atac-output
-          path: output_atac
