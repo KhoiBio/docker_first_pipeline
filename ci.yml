@@ -14,30 +14,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: List files in repo root
-        run: ls -l
-
-      - name: List test_data contents
-        run: ls -l test_data
-
-      - name: List reference contents
-        run: ls -l reference
-
-      - name: Verify Dockerfile path
+      # Step 2: Verify repo structure for debugging
+      - name: Verify repo structure
         run: |
           echo "Current directory: $(pwd)"
-          ls -R docker_first_pipeline/docker
+          ls -R
 
+      # Step 3: Build Docker image
       - name: Build Docker image (verbose)
         run: |
           docker build --progress=plain \
             -t docker_first_pipeline:ci \
-            -f ./docker_first_pipeline/docker/Dockerfile \
+            -f ./docker/Dockerfile \
             .
 
+      # Step 4: Run RNA pipeline test
       - name: Run RNA pipeline test
         run: |
           docker run --rm \
@@ -50,9 +45,11 @@ jobs:
             /data/reference/test_reference.fa \
             /data/output_rna
 
+      # Step 5: Check RNA output files
       - name: Check RNA output files
         run: ls -l /data/output_rna || echo "No RNA output found"
 
+      # Step 6: Run ATAC pipeline test
       - name: Run ATAC pipeline test
         run: |
           docker run --rm \
@@ -66,5 +63,6 @@ jobs:
             condition1 \
             /data/output_atac
 
+      # Step 7: Check ATAC output files
       - name: Check ATAC output files
         run: ls -l /data/output_atac || echo "No ATAC output found"
