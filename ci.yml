@@ -37,6 +37,7 @@ jobs:
         run: |
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
+            -v $PWD/output_rna:/data/output_rna \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_rna.sh \
@@ -54,6 +55,7 @@ jobs:
         run: |
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
+            -v $PWD/output_rna:/data/output_atac \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_atac.sh \
