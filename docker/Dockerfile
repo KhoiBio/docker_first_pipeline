@@ -46,10 +46,10 @@ RUN apt-get update && apt-get install -y bamtools && rm -rf /var/lib/apt/lists/*
 WORKDIR /pipeline/workflow
 
 # Copy pipeline scripts into container
-COPY run_rna.sh run_atac.sh run_atac_macs.sh ./
+COPY run_rna.sh run_atac.sh ./
 
 # Make scripts executable
-RUN chmod +x run_rna.sh run_atac.sh run_atac_macs.sh
+RUN chmod +x run_rna.sh run_atac.sh
 
 # Set entrypoint
 ENTRYPOINT ["/bin/bash"]
