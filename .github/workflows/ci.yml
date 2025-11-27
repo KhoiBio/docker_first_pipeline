@@ -35,6 +35,12 @@ jobs:
       # ============================
       # RNA Pipeline Test
       # ============================
+      - name: Debug input files before RNA run
+        run: |
+          echo "Checking test_data and reference directories:"
+          ls -lh test_data || echo "test_data missing"
+          ls -lh reference || echo "reference missing"
+
       - name: Run RNA pipeline test
         run: |
           mkdir -p output_rna
@@ -54,11 +60,11 @@ jobs:
           docker run --rm \
             -v $PWD/output_rna:/data/test_output_rna \
             docker_first_pipeline:ci \
-            ls -R /data/test_output_rna || echo "No files inside container"
+            bash -c "echo 'Container output:' && ls -R /data/test_output_rna || echo 'No files inside container'"
 
       - name: Check RNA output files on host
         run: |
-          echo "RNA output directory:"
+          echo "RNA output directory on host:"
           ls -R output_rna || echo "No RNA output found"
           if [ ! "$(ls -A output_rna)" ]; then
             echo "RNA pipeline produced no output" && exit 1
@@ -67,6 +73,12 @@ jobs:
       # ============================
       # ATAC Pipeline Test
       # ============================
+      - name: Debug input files before ATAC run
+        run: |
+          echo "Checking test_data and reference directories:"
+          ls -lh test_data || echo "test_data missing"
+          ls -lh reference || echo "reference missing"
+
       - name: Run ATAC pipeline test
         run: |
           mkdir -p output_atac
@@ -87,11 +99,27 @@ jobs:
           docker run --rm \
             -v $PWD/output_atac:/data/test_output_atac \
             docker_first_pipeline:ci \
-            ls -R /data/test_output_atac || echo "No files inside container"
+            bash -c "echo 'Container output:' && ls -R /data/test_output_atac || echo 'No files inside container'"
 
       - name: Check ATAC output files on host
         run: |
-          echo "ATAC output directory:"
+          echo "ATAC output directory on host:"
           ls -R output_atac || echo "No ATAC output found"
           if [ ! "$(ls -A output_atac)" ]; then
             echo "ATAC pipeline produced no output" && exit 1
+          fi
+
+      # ============================
+      # Upload artifacts for debugging
+      # ============================
+      - name: Upload RNA outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: RNA-output
+          path: output_rna
+
+      - name: Upload ATAC outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: ATAC-output
+          path: output_atac
