@@ -18,7 +18,7 @@ SAMPLE=$(basename "$R1" | sed -E 's/_R1\.fastq\.gz//;s/_r1\.fastq\.gz//')
 echo "Running RNA-seq pipeline for sample: $SAMPLE"
 
 # Trim adapters
-trim_galore --paired --cores 2 -o ${OUTPUT_DIR}/trimmed $R1 $R2 || true
+trim_galore --paired --cores 2 -o ${OUTPUT_DIR} $R1 $R2 || true
 TRIM_R1="${OUTPUT_DIR}/${SAMPLE}_R1_val_1.fq.gz"
 TRIM_R2="${OUTPUT_DIR}/${SAMPLE}_R2_val_2.fq.gz"
 
@@ -31,7 +31,7 @@ else
 fi
 
 # Sort and index
-if [ -s ${OUTPUT_DIR}/aligned/${SAMPLE}.bam ]; then
+if [ -s ${OUTPUT_DIR}/${SAMPLE}.bam ]; then
     samtools sort -@ 2 -o ${OUTPUT_DIR}/${SAMPLE}_sorted.bam ${OUTPUT_DIR}/${SAMPLE}.bam
 else
     echo "Empty BAM: creating sorted BAM placeholder"
@@ -53,7 +53,7 @@ if [ -s ${OUTPUT_DIR}/${SAMPLE}_dedup.bam ]; then
         | grep -E '^@|^chrFake' \
         | samtools view -b -o ${OUTPUT_DIR}/${SAMPLE}_nomt.bam
 else
-    samtools view -b -o ${OUTPUT_DIR}/filtered/${SAMPLE}_nomt.bam /dev/null
+    samtools view -b -o ${OUTPUT_DIR}/${SAMPLE}_nomt.bam /dev/null
 fi
 
 # Remove blacklisted regions
