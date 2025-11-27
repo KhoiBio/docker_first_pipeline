@@ -1,3 +1,4 @@
+
 name: Docker Pipeline CI
 
 on:
@@ -31,10 +32,12 @@ jobs:
             -f ./docker/Dockerfile \
             .
 
-      # Step 4: Run RNA pipeline test
+      # ============================
+      # RNA Pipeline Test
+      # ============================
       - name: Run RNA pipeline test
         run: |
-          mkdir -p test_output_rna
+          mkdir -p output_rna
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
             -v $PWD/output_rna:/data/test_output_rna \
@@ -46,16 +49,27 @@ jobs:
             /data/reference/test_reference.fa \
             /data/test_output_rna
 
-      # Step 5: Check RNA output files (HOST directory, not /data/)
-      - name: Check RNA output files
+      - name: Debug RNA output inside container
+        run: |
+          docker run --rm \
+            -v $PWD/output_rna:/data/test_output_rna \
+            docker_first_pipeline:ci \
+            ls -R /data/test_output_rna || echo "No files inside container"
+
+      - name: Check RNA output files on host
         run: |
           echo "RNA output directory:"
-          ls -R test_output_rna || echo "No RNA output found"
+          ls -R output_rna || echo "No RNA output found"
+          if [ ! "$(ls -A output_rna)" ]; then
+            echo "RNA pipeline produced no output" && exit 1
+          fi
 
-      # Step 6: Run ATAC pipeline test
+      # ============================
+      # ATAC Pipeline Test
+      # ============================
       - name: Run ATAC pipeline test
         run: |
-          mkdir -p test_output_atac
+          mkdir -p output_atac
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
             -v $PWD/output_atac:/data/test_output_atac \
@@ -68,8 +82,16 @@ jobs:
             condition1 \
             /data/test_output_atac
 
-      # Step 7: Check ATAC output files (HOST directory)
-      - name: Check ATAC output files
+      - name: Debug ATAC output inside container
+        run: |
+          docker run --rm \
+            -v $PWD/output_atac:/data/test_output_atac \
+            docker_first_pipeline:ci \
+            ls -R /data/test_output_atac || echo "No files inside container"
+
+      - name: Check ATAC output files on host
         run: |
           echo "ATAC output directory:"
-          ls -R test_output_atac || echo "No ATAC output found"
+          ls -R output_atac || echo "No ATAC output found"
+          if [ ! "$(ls -A output_atac)" ]; then
+            echo "ATAC pipeline produced no output" && exit 1
