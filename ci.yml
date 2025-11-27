@@ -1,4 +1,3 @@
-
 name: Docker Pipeline CI
 
 on:
@@ -35,27 +34,31 @@ jobs:
       # Step 4: Run RNA pipeline test
       - name: Run RNA pipeline test
         run: |
+          mkdir -p output_rna
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
-            -v $PWD/output_rna:/data/test_output \
+            -v $PWD/output_rna:/data/output_rna \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_rna.sh \
             /data/test_data/rna_R1.fastq.gz \
             /data/test_data/rna_R2.fastq.gz \
             /data/reference/test_reference.fa \
-            /data/test_output
+            /data/output_rna
 
-      # Check RNA output files
+      # Step 5: Check RNA output files (HOST directory, not /data/)
       - name: Check RNA output files
-        run: ls -l /data/test_output || echo "No RNA output found"
+        run: |
+          echo "RNA output directory:"
+          ls -R output_rna || echo "No RNA output found"
 
-      # Run ATAC pipeline test
+      # Step 6: Run ATAC pipeline test
       - name: Run ATAC pipeline test
         run: |
+          mkdir -p output_atac
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
-            -v $PWD/output_rna:/data/test_output \
+            -v $PWD/output_atac:/data/output_atac \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_atac.sh \
@@ -63,8 +66,10 @@ jobs:
             /data/test_data/atac_R2.fastq.gz \
             /data/reference/test_reference.fa \
             condition1 \
-            /data/test_output
+            /data/output_atac
 
-      # Step 7: Check ATAC output files
+      # Step 7: Check ATAC output files (HOST directory)
       - name: Check ATAC output files
-        run: ls -l /data/test_output || echo "No ATAC output found"
+        run: |
+          echo "ATAC output directory:"
+          ls -R output_atac || echo "No ATAC output found"
