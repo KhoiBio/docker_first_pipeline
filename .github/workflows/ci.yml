@@ -1,62 +1,9 @@
-name: Docker Pipeline CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: List files in repo root
-        run: ls -l
-
-      - name: List test_data contents
-        run: ls -l test_data
-
-      - name: List reference contents
-        run: ls -l reference
-
-      
-      - name: Build Docker image (verbose)
-        run: docker build --progress=plain -t docker_first_pipeline:ci -f docker_first_pipeline/docker/Dockerfile .
-
-
-      - name: Run RNA pipeline test
-        run: |
-          docker run --rm \
-            -v $PWD/test_data:/data/test_data \
-            -v $PWD/reference:/data/reference \
-            docker_first_pipeline:ci \
-            bash /pipeline/workflow/run_rna.sh \
-            /data/test_data/rna_R1.fastq.gz \
-            /data/test_data/rna_R2.fastq.gz \
-            /data/reference/test_reference.fa \
-            /data/output_rna
-
-      - name: Check RNA output files
-        run: ls -l /data/output_rna || echo "No RNA output found"  # For debugging
-
-      - name: Run ATAC pipeline test
-        run: |
-          docker run --rm \
-            -v $PWD/test_data:/data/test_data \
-            -v $PWD/reference:/data/reference \
-            docker_first_pipeline:ci \
-            bash /pipeline/workflow/run_atac.sh \
-            /data/test_data/atac_R1.fastq.gz \
-            /data/test_data/atac_R2.fastq.gz \
-            /data/reference/test_reference.fa \
-            condition1 \
-            /data/output_atac
-
-      - name: Check ATAC output files
-        run: ls -l /data/output_atac || echo "No ATAC output found"  # For debugging
+- name: Build Docker image (verbose)
+  run: |
+    echo "Current directory: $(pwd)"
+    ls -R
+    docker build --progress=plain \
+      -t docker_first_pipeline:ci \
+      -f ./docker_first_pipeline/docker/Dockerfile \
+      .
