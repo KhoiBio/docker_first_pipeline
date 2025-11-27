@@ -25,8 +25,10 @@ jobs:
       - name: List reference contents
         run: ls -l reference
 
+      
       - name: Build Docker image (verbose)
-        run: docker build --progress=plain -t docker_first_pipeline:ci -f docker_first_pipeline/docker
+        run: docker build --progress=plain -t docker_first_pipeline:ci -f docker_first_pipeline/docker/Dockerfile .
+
 
       - name: Run RNA pipeline test
         run: |
