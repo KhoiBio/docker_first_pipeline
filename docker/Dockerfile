@@ -32,12 +32,6 @@ RUN apt-get update && apt-get install -y \
     bamtools \
     && rm -rf /var/lib/apt/lists/*
 
-# Install STAR aligner (RNA-seq)
-RUN wget https://github.com/alexdobin/STAR/archive/2.7.10b.tar.gz && \
-    tar -xvzf 2.7.10b.tar.gz && \
-    cd STAR-2.7.10b/source && make STAR && cp STAR /usr/local/bin && \
-    cd / && rm -rf STAR-2.7.10b 2.7.10b.tar.gz
-
 # Install Picard (Java-based)
 RUN wget https://github.com/broadinstitute/picard/releases/download/3.1.1/picard.jar -O /usr/local/bin/picard.jar
 
