@@ -1,0 +1,97 @@
+
+name: Docker Pipeline CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # Step 2: Verify repo structure for debugging
+      - name: Verify repo structure
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -R
+
+      # Step 3: Build Docker image
+      - name: Build Docker image (verbose)
+        run: |
+          docker build --progress=plain \
+            -t docker_first_pipeline:ci \
+            -f ./docker/Dockerfile \
+            .
+
+      # ============================
+      # RNA Pipeline Test
+      # ============================
+      - name: Run RNA pipeline test
+        run: |
+          mkdir -p output_rna
+          docker run --rm \
+            -v $PWD/test_data:/data/test_data \
+            -v $PWD/output_rna:/data/test_output_rna \
+            -v $PWD/reference:/data/reference \
+            docker_first_pipeline:ci \
+            bash /pipeline/workflow/run_rna_ci.sh \
+            /data/test_data/rna_R1.fastq.gz \
+            /data/test_data/rna_R2.fastq.gz \
+            /data/reference/test_reference.fa \
+            /data/test_output_rna
+
+      - name: Debug RNA output inside container
+        run: |
+          docker run --rm \
+            -v $PWD/output_rna:/data/test_output_rna \
+            docker_first_pipeline:ci \
+            ls -R /data/test_output_rna || echo "No files inside container"
+
+      - name: Check RNA output files on host
+        run: |
+          echo "RNA output directory:"
+          ls -R output_rna || echo "No RNA output found"
+          if [ ! "$(ls -A output_rna)" ]; then
+            echo "RNA pipeline produced no output" && exit 1
+          fi
+
+      # ============================
+      # ATAC Pipeline Test
+      # ============================
+      - name: Run ATAC pipeline test
+        run: |
+          mkdir -p output_atac
+          docker run --rm \
+            -v $PWD/test_data:/data/test_data \
+            -v $PWD/output_atac:/data/test_output_atac \
+            -v $PWD/reference:/data/reference \
+            docker_first_pipeline:ci \
+            bash /pipeline/workflow/run_atac_ci.sh \
+            /data/test_data/atac_R1.fastq.gz \
+            /data/test_data/atac_R2.fastq.gz \
+            /data/reference/test_reference.fa \
+            condition1 \
+            /data/test_output_atac
+
+      - name: Debug ATAC output inside container
+        run: |
+          docker run --rm \
+            -v $PWD/output_atac:/data/test_output_atac \
+            docker_first_pipeline:ci \
+            ls -R /data/test_output_atac || echo "No files inside container"
+
+      - name: Check ATAC output files on host
+        run: |
+          echo "ATAC output directory:"
+          ls -R output_atac || echo "No ATAC output found"
+          if [ ! "$(ls -A output_atac)" ]; then
+            echo "ATAC pipeline produced no output" && exit 1
