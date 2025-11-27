@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t docker_first_pipeline:latest docker/
+
+      - name: Run test ATAC-seq pipeline
+        run: |
+          mkdir test_output
+          docker run --rm -v ${{ github.workspace }}/test_data:/data \
+            -v ${{ github.workspace }}/test_output:/output \
+            docker_first_pipeline:latest \
+            /workflow/run_atac.sh /data/sample_R1.fastq.gz /data/sample_R2.fastq.gz GENOME_INDEX
