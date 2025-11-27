@@ -40,7 +40,7 @@ jobs:
             -v $PWD/output_rna:/data/test_output_rna \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
-            bash /pipeline/workflow/run_rna.sh \
+            bash /pipeline/workflow/run_rna_ci.sh \
             /data/test_data/rna_R1.fastq.gz \
             /data/test_data/rna_R2.fastq.gz \
             /data/reference/test_reference.fa \
@@ -61,7 +61,7 @@ jobs:
             -v $PWD/output_atac:/data/test_output_atac \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
-            bash /pipeline/workflow/run_atac.sh \
+            bash /pipeline/workflow/run_atac_ci.sh \
             /data/test_data/atac_R1.fastq.gz \
             /data/test_data/atac_R2.fastq.gz \
             /data/reference/test_reference.fa \
