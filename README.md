@@ -1,3 +1,5 @@
+    conda create -c conda-forge -c bioconda -c nodefaults -n snakemake snakemake
+
 Docker First Pipeline
 Overview
 
