@@ -1,8 +1,8 @@
-    conda create -c conda-forge -c bioconda -c nodefaults -n snakemake snakemake
-
 Docker First Pipeline
 Overview
 
+conda create -n snakemake310 python=3.10 snakemake
+snakemake --snakefile Snakemake --cores 6
 Docker First Pipeline is a bioinformatics workflow container for RNA-seq and ATAC-seq processing.
 
 This repository includes:
