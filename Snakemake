@@ -1,0 +1,37 @@
+
+configfile: "config.yaml"
+
+rule all:
+    input:
+        "output_rna",
+        "output_atac"
+
+rule rna_pipeline:
+    input:
+        r1=config["rna"]["r1"],
+        r2=config["rna"]["r2"],
+        genome=config["genome"]
+    output:
+        directory("output_rna")
+    container:
+        "docker://ghcr.io/khoibio/docker_first_pipeline:latest"
+    shell:
+        """
+        bash /pipeline/workflow/run_rna_ci.sh \
+            {input.r1} {input.r2} {input.genome} {output}
+        """
+
+rule atac_pipeline:
+    input:
+        r1=config["atac"]["r1"],
+        r2=config["atac"]["r2"],
+        genome=config["genome"]
+    output:
+        directory("output_atac")
+    container:
+        "docker://ghcr.io/khoibio/docker_first_pipeline:latest"
+    shell:
+        """
+        bash /pipeline/workflow/run_atac_ci.sh \
+            {input.r1} {input.r2} {input.genome} condition1 {output}
+        """
