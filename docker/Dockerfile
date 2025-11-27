@@ -51,4 +51,4 @@ COPY workflow/run_rna.sh workflow/run_atac.sh ./
 RUN chmod +x run_rna.sh run_atac.sh
 
 # Set entrypoint
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash","-c"]
