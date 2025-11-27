@@ -20,7 +20,7 @@ SAMPLE=$(basename "$R1" | sed -E 's/_R1\.fastq\.gz//;s/_r1\.fastq\.gz//')
 echo "Running ATAC + MACS2 pipeline for sample: $SAMPLE (Condition: $CONDITION)"
 
 # Step 1: Trim adapters
-trim_galore --paired --nextera --cores 2 -o ${OUTPUT_DIR}/trimmed $R1 $R2 || true
+trim_galore --paired --nextera --cores 2 -o ${OUTPUT_DIR} $R1 $R2 || true
 TRIM_R1="${OUTPUT_DIR}/${SAMPLE}_R1_val_1.fq.gz"
 TRIM_R2="${OUTPUT_DIR}/${SAMPLE}_R2_val_2.fq.gz"
 
