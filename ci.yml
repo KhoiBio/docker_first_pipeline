@@ -37,25 +37,25 @@ jobs:
         run: |
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
-            -v $PWD/output_rna:/data/test_data/output_rna \
+            -v $PWD/output_rna:/data/test_output \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_rna.sh \
             /data/test_data/rna_R1.fastq.gz \
             /data/test_data/rna_R2.fastq.gz \
             /data/reference/test_reference.fa \
-            output_rna/
+            /data/test_output
 
-      # Step 5: Check RNA output files
+      # Check RNA output files
       - name: Check RNA output files
-        run: ls -l /data/output_rna || echo "No RNA output found"
+        run: ls -l /data/test_output || echo "No RNA output found"
 
-      # Step 6: Run ATAC pipeline test
+      # Run ATAC pipeline test
       - name: Run ATAC pipeline test
         run: |
           docker run --rm \
             -v $PWD/test_data:/data/test_data \
-            -v $PWD/output_rna:/data/test_data/output_atac \
+            -v $PWD/output_rna:/data/test_output \
             -v $PWD/reference:/data/reference \
             docker_first_pipeline:ci \
             bash /pipeline/workflow/run_atac.sh \
@@ -63,8 +63,8 @@ jobs:
             /data/test_data/atac_R2.fastq.gz \
             /data/reference/test_reference.fa \
             condition1 \
-            output_atac/
+            /data/test_output
 
       # Step 7: Check ATAC output files
       - name: Check ATAC output files
-        run: ls -l /data/output_atac || echo "No ATAC output found"
+        run: ls -l /data/test_output || echo "No ATAC output found"
