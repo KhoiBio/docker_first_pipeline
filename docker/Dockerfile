@@ -4,6 +4,9 @@ FROM ubuntu:22.04
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Use bash for RUN commands
+SHELL ["/bin/bash", "-c"]
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget curl unzip git build-essential python3 python3-pip \
@@ -25,6 +28,8 @@ RUN apt-get update && apt-get install -y \
     hisat2 \
     subread \
     trim-galore \
+    bwa \
+    bamtools \
     && rm -rf /var/lib/apt/lists/*
 
 # Install STAR aligner (RNA-seq)
@@ -33,20 +38,14 @@ RUN wget https://github.com/alexdobin/STAR/archive/2.7.10b.tar.gz && \
     cd STAR-2.7.10b/source && make STAR && cp STAR /usr/local/bin && \
     cd / && rm -rf STAR-2.7.10b 2.7.10b.tar.gz
 
-# Install BWA (ATAC-seq)
-RUN apt-get update && apt-get install -y bwa && rm -rf /var/lib/apt/lists/*
-
 # Install Picard (Java-based)
 RUN wget https://github.com/broadinstitute/picard/releases/download/3.1.1/picard.jar -O /usr/local/bin/picard.jar
-
-# Install BAMTools
-RUN apt-get update && apt-get install -y bamtools && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /pipeline/workflow
 
 # Copy pipeline scripts into container
-COPY run_rna.sh run_atac.sh ./
+COPY workflow/run_rna.sh workflow/run_atac.sh ./
 
 # Make scripts executable
 RUN chmod +x run_rna.sh run_atac.sh
