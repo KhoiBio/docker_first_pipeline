@@ -31,12 +31,16 @@ jobs:
           echo "Current directory: $(pwd)"
           ls -R docker_first_pipeline/docker
 
-      - name: Build Docker image (verbose)
-        run: |
-          docker build --progress=plain \
-            -t docker_first_pipeline:ci \
-            -f ./docker_first_pipeline/docker/Dockerfile \
-            .
+      
+- name: Build Docker image (verbose)
+  run: |
+    echo "Current directory: $(pwd)"
+    ls -R
+    docker build --progress=plain \
+      -t docker_first_pipeline:ci \
+      -f ./docker/Dockerfile \
+      .
+
 
       - name: Run RNA pipeline test
         run: |
