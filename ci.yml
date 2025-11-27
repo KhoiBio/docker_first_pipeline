@@ -44,7 +44,7 @@ jobs:
             /data/test_data/rna_R1.fastq.gz \
             /data/test_data/rna_R2.fastq.gz \
             /data/reference/test_reference.fa \
-            /data/output_rna
+            output_rna/
 
       # Step 5: Check RNA output files
       - name: Check RNA output files
@@ -63,7 +63,7 @@ jobs:
             /data/test_data/atac_R2.fastq.gz \
             /data/reference/test_reference.fa \
             condition1 \
-            /data/output_atac
+            output_atac/
 
       # Step 7: Check ATAC output files
       - name: Check ATAC output files
