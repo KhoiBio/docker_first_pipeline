@@ -1,0 +1,10 @@
+
+rna:
+  r1: "test_data/rna_R1.fastq.gz"
+  r2: "test_data/rna_R2.fastq.gz"
+
+atac:
+  r1: "test_data/atac_R1.fastq.gz"
+  r2: "test_data/atac_R2.fastq.gz"
+
+genome: "reference/test_reference.fa"
