@@ -15,6 +15,7 @@ BLACKLIST=${5:-"/data/fake_blacklist.bed"}
 
 SAMPLE=$(basename "$R1" | sed -E 's/_R1\.fastq\.gz//;s/_r1\.fastq\.gz//')
 
+mkdir -p ${OUTPUT_DIR}
 echo "Running RNA-seq pipeline for sample: $SAMPLE"
 
 # Trim adapters
